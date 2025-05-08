@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report - Supermarket Billing System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: #3a86ff;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .dashboard-title {
+            margin: 20px 0;
+            color: #333;
+            font-size: 24px;
+        }
+        
+        .report-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            height: 100%;
+        }
+        
+        .card-title {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3a86ff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .filter-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+            background-color: white;
+        }
+        
+        .filter-button {
+            padding: 8px 15px;
+            background-color: #3a86ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: auto;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-button:hover {
+            background-color: #2667cc;
+        }
+        
+        .print-button {
+            background-color: #4CAF50;
+        }
+        
+        .print-button:hover {
+            background-color: #3e8e41;
+        }
+        
+        @media (max-width: 992px) {
+            .report-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media print {
+            .header, .filter-container, .nav-links, .filter-button {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Supermarket Sales Report</div>
+        <div class="nav-links">
+            <a th:href="@{/admin/home}">Products</a>
+            <a th:href="@{/}">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1 class="dashboard-title">Sales Report</h1>
+        
+        <div class="filter-container">
+            <div class="filter-item">
+                <span class="filter-label">Customer:</span>
+                <select id="customer-filter" class="filter-select">
+                    <option value="">All Customers</option>
+                    <!-- Will be populated dynamically -->
+                </select>
+            </div>
+            <div class="filter-item">
+                <span class="filter-label">Product:</span>
+                <select id="product-filter" class="filter-select">
+                    <option value="">All Products</option>
+                    <!-- Will be populated dynamically -->
+                </select>
+            </div>
+            <button id="filter-btn" class="filter-button">Apply Filters</button>
+            <button id="print-btn" class="filter-button print-button">Print Report</button>
+        </div>
+        
+        <div class="report-container">
+            <div class="card">
+                <h2 class="card-title">Sales Summary</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-sales">0</div>
+                        <div class="stat-label">Total Sales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-revenue">$0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-customers">0</div>
+                        <div class="stat-label">Total Customers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-sale">$0</div>
+                        <div class="stat-label">Average Sale</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="sales-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Top Products</h2>
+                <div class="table-container">
+                    <table class="data-table" id="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity Sold</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-body">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2 class="card-title" style="margin-top: 30px;">Top Customers</h2>
+                <div class="table-container">
+                    <table class="data-table" id="customers-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Purchases</th>
+                                <th>Total Spent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customers-body">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get bills data from the model
+            const bills = /*[[${bills}]]*/ [];
+            
+            // Process the bills data
+            function processData(data) {
+                // Sales summary
+                const totalSales = data.length;
+                const totalRevenue = data.reduce((sum, bill) => sum + bill.total, 0);
+                const customers = [...new Set(data.map(bill => bill.customer))];
+                const totalCustomers = customers.length;
+                const avgSale = totalSales > 0 ? totalRevenue / totalSales : 0;
+                
+                document.getElementById('total-sales').textContent = totalSales;
+                document.getElementById('total-revenue').textContent = '$' + totalRevenue.toFixed(2);
+                document.getElementById('total-customers').textContent = totalCustomers;
+                document.getElementById('avg-sale').textContent = '$' + avgSale.toFixed(2);
+                
+                // Top products
+                const productsSummary = {};
+                data.forEach(bill => {
+                    if (!productsSummary[bill.product]) {
+                        productsSummary[bill.product] = { quantity: 0, revenue: 0 };
+                    }
+                    productsSummary[bill.product].quantity += bill.quantity;
+                    productsSummary[bill.product].revenue += bill.total;
+                });
+                
+                const productsArray = Object.entries(productsSummary).map(([product, data]) => ({
+                    product,
+                    quantity: data.quantity,
+                    revenue: data.revenue
+                }));
+                
+                productsArray.sort((a, b) => b.revenue - a.revenue);
+                
+                const productsBody = document.getElementById('products-body');
+                productsBody.innerHTML = '';
+                productsArray.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.product}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.revenue.toFixed(2)}</td>
+                    `;
+                    productsBody.appendChild(row);
+                });
+                
+                // Top customers
+                const customersSummary = {};
+                data.forEach(bill => {
+                    if (!customersSummary[bill.customer]) {
+                        customersSummary[bill.customer] = { purchases: 0, spent: 0 };
+                    }
+                    customersSummary[bill.customer].purchases += 1;
+                    customersSummary[bill.customer].spent += bill.total;
+                });
+                
+                const customersArray = Object.entries(customersSummary).map(([customer, data]) => ({
+                    customer,
+                    purchases: data.purchases,
+                    spent: data.spent
+                }));
+                
+                customersArray.sort((a, b) => b.spent - a.spent);
+                
+                const customersBody = document.getElementById('customers-body');
+                customersBody.innerHTML = '';
+                customersArray.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.customer}</td>
+                        <td>${item.purchases}</td>
+                        <td>$${item.spent.toFixed(2)}</td>
+                    `;
+                    customersBody.appendChild(row);
+                });
+                
+                // Chart
+                renderChart(productsArray);
+                
+                // Populate filters
+                const customerFilter = document.getElementById('customer-filter');
+                const productFilter = document.getElementById('product-filter');
+                
+                // Clear existing options
+                customerFilter.innerHTML = '<option value="">All Customers</option>';
+                productFilter.innerHTML = '<option value="">All Products</option>';
+                
+                // Add customer options
+                customers.forEach(customer => {
+                    const option = document.createElement('option');
+                    option.value = customer;
+                    option.textContent = customer;
+                    customerFilter.appendChild(option);
+                });
+                
+                // Add product options
+                Object.keys(productsSummary).forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product;
+                    option.textContent = product;
+                    productFilter.appendChild(option);
+                });
+            }
+            
+            function renderChart(productsData) {
+                const ctx = document.getElementById('sales-chart').getContext('2d');
+                
+                // Destroy existing chart if it exists
+                if (window.salesChart) {
+                    window.salesChart.destroy();
+                }
+                
+                // Get top 5 products for the chart
+                const topProducts = productsData.slice(0, 5);
+                
+                window.salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: topProducts.map(item => item.product),
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: topProducts.map(item => item.revenue),
+                            backgroundColor: 'rgba(58, 134, 255, 0.7)',
+                            borderColor: 'rgba(58, 134, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Revenue ($)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Top 5 Products by Revenue'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Initial data processing
+            processData(bills);
+            
+            // Filter button click handler
+            document.getElementById('filter-btn').addEventListener('click', function() {
+                const customerFilter = document.getElementById('customer-filter').value;
+                const productFilter = document.getElementById('product-filter').value;
+                
+                let filteredData = bills;
+                
+                if (customerFilter) {
+                    filteredData = filteredData.filter(bill => bill.customer === customerFilter);
+                }
+                
+                if (productFilter) {
+                    filteredData = filteredData.filter(bill => bill.product === productFilter);
+                }
+                
+                processData(filteredData);
+            });
+            
+            // Print button click handler
+            document.getElementById('print-btn').addEventListener('click', function() {
+                window.print();
+            });
+        });
+    </script>
+</body>
+</html>
