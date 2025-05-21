@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supermarket Billing System - Login</title>
+    <title>Supermarket Billing System - Register</title>
     <style>
         * {
             box-sizing: border-box;
@@ -63,23 +63,28 @@
             background-color: #2667cc;
         }
         
-        .register-link {
+        .login-link {
             margin-top: 20px;
             display: block;
             text-align: center;
         }
         
-        .register-link a {
+        .login-link a {
             color: #3a86ff;
             text-decoration: none;
         }
         
-        .register-link a:hover {
+        .login-link a:hover {
             text-decoration: underline;
         }
         
         .error-message {
             color: #ff3a3a;
+            margin-top: 20px;
+        }
+        
+        .success-message {
+            color: #4CAF50;
             margin-top: 20px;
         }
     </style>
@@ -88,24 +93,41 @@
     <div class="container">
         <div class="logo">Supermarket Billing System</div>
         
-        <form action="/login" method="post">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit" class="button">Login</button>
+        <form action="/register" method="post">
+            <input type="text" name="username" placeholder="Choose Username" required>
+            <input type="password" name="password" placeholder="Choose Password" required>
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+            <button type="submit" class="button">Register</button>
         </form>
         
-        <div class="register-link">
-            <p>New customer? <a href="/register">Register here</a></p>
+        <div class="login-link">
+            <p>Already have an account? <a href="/">Login here</a></p>
         </div>
         
-        <div class="error-message" id="error-message" style="display: none;">Invalid username or password</div>
+        <div class="error-message" id="password-error" style="display: none;">Passwords do not match</div>
+        <div class="error-message" id="username-error" style="display: none;">Username already taken</div>
+        <div class="error-message" id="generic-error" style="display: none;">Registration failed</div>
+        <div class="success-message" id="success-message" style="display: none;">Registration successful! Redirecting to login...</div>
     </div>
     
     <script>
-        // Check for login error
+        // Check for registration errors
         const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('passwordMismatch')) {
+            document.getElementById('password-error').style.display = 'block';
+        }
+        if (urlParams.has('usernameTaken')) {
+            document.getElementById('username-error').style.display = 'block';
+        }
         if (urlParams.has('error')) {
-            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('generic-error').style.display = 'block';
+        }
+        if (urlParams.has('success')) {
+            document.getElementById('success-message').style.display = 'block';
+            // Redirect to login after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
         }
     </script>
 </body>
