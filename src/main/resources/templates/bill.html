@@ -1,406 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bills - Supermarket Billing System</title>
+    <title th:text="${pageTitle}">Orders</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            min-height: 100vh;
-        }
-        
-        .header {
-            background-color: #3a86ff;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        
-        .dashboard-title {
-            margin: 20px 0;
-            color: #333;
-            font-size: 24px;
-        }
-        
-        .bills-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .bill-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .bill-table th, .bill-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .bill-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .bill-table tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .bill-total {
-            color: #3a86ff;
-            font-weight: bold;
-        }
-        
-        .bill-date {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .bill-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .print-btn {
-            padding: 6px 12px;
-            background-color: #3a86ff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-        
-        .print-btn:hover {
-            background-color: #2667cc;
-        }
-        
-        .no-bills {
-            padding: 30px;
-            text-align: center;
-            color: #666;
-            font-style: italic;
-        }
-        
-        .bills-summary {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .summary-item:last-child {
-            border-bottom: none;
-            font-weight: bold;
-        }
-        
-        .summary-label {
-            color: #555;
-        }
-        
-        .summary-value {
-            color: #333;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f5f5f5; }
+        .header { background-color: #3a86ff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
+        h1 { margin-bottom: 20px; color: #333; }
+        .order-table { width: 100%; background-color: white; border-collapse: collapse; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; }
+        .order-table th, .order-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .order-table th { background-color: #f8f9fa; }
+        .order-status-paid { color: green; font-weight: bold; }
+        .order-status-unpaid { color: red; font-weight: bold; }
+        .pay-btn { background-color: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .no-bills { text-align: center; font-size: 1.2em; color: #666; padding: 50px; background: white; border-radius: 8px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">Supermarket Bills</div>
-        <div class="nav-links">
-            <a href="#" id="back-link">Back</a>
-            <a href="/">Logout</a>
-        </div>
+<div class="header">
+    <div class="logo">Your Orders</div>
+    <div class="nav-links">
+        <a th:href="@{/customer/home}">Continue Shopping</a>
     </div>
+</div>
+
+<div class="container">
+    <h1 th:text="${pageTitle}">Orders</h1>
     
-    <div class="container">
-        <h1 class="dashboard-title" id="bills-title">Bills</h1>
-        
-        <div class="bills-container">
-            <table class="bill-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:if="${bills.empty}">
-                        <td colspan="6" class="no-bills">No bills found</td>
-                    </tr>
-                    <tr th:each="bill : ${bills}">
-                        <td th:text="${bill.id}">1</td>
-                        <td th:text="${bill.customer}">Customer Name</td>
-                        <td th:text="${bill.product}">Product Name</td>
-                        <td th:text="${bill.quantity}">1</td>
-                        <td class="bill-total" th:text="'$' + ${bill.total}">$0.00</td>
-                        <td class="bill-actions">
-                            <button class="print-btn" th:onclick="'printBill(' + ${bill.id} + ')'">Print</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="bills-summary" id="bills-summary">
-            <h3>Summary</h3>
-            <div class="summary-item">
-                <span class="summary-label">Total Bills:</span>
-                <span class="summary-value" id="total-bills">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Total Products:</span>
-                <span class="summary-value" id="total-products">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Total Amount:</span>
-                <span class="summary-value" id="total-amount">$0.00</span>
-            </div>
-        </div>
+    <div th:if="${orders.isEmpty()}" class="no-bills">
+        <p>No orders found.</p>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const backLink = document.getElementById('back-link');
-            const billsTitle = document.getElementById('bills-title');
-            const urlParams = new URLSearchParams(window.location.search);
-            const customer = urlParams.get('customer');
-            
-            // Set back link based on current path
-            if (window.location.pathname.includes('/admin')) {
-                backLink.href = '/admin/home';
-                billsTitle.textContent = 'All Bills';
-            } else {
-                backLink.href = '/customer/home';
-                if (customer) {
-                    billsTitle.textContent = `Bills for ${customer}`;
-                } else {
-                    billsTitle.textContent = 'All Bills';
-                }
-            }
-            
-            // Calculate summary statistics - Fixed the calculation logic
-            const billRows = Array.from(document.querySelectorAll('.bill-table tbody tr')).filter(row => !row.querySelector('.no-bills'));
-            
-            if (billRows.length > 0) {
-                // Count the total number of bills
-                const totalBills = billRows.length;
-                
-                // Sum the quantities from all bills
-                const totalProducts = billRows.reduce((sum, row) => {
-                    // Get quantity from the 4th cell (index 3)
-                    const quantity = parseInt(row.cells[3].textContent) || 0;
-                    return sum + quantity;
-                }, 0);
-                
-                // Calculate total amount from all bills
-                const totalAmount = billRows.reduce((sum, row) => {
-                    // Get amount from the 5th cell (index 4), removing '$' and converting to float
-                    const amountText = row.cells[4].textContent.replace('$', '').trim();
-                    const amount = parseFloat(amountText) || 0;
-                    return sum + amount;
-                }, 0);
-                
-                // Update the summary display
-                document.getElementById('total-bills').textContent = totalBills;
-                document.getElementById('total-products').textContent = totalProducts;
-                document.getElementById('total-amount').textContent = '$' + totalAmount.toFixed(2);
-                
-                // Make sure the summary is visible
-                document.getElementById('bills-summary').style.display = 'block';
-            } else {
-                // If no bills, you can choose to hide or show zeros
-                document.getElementById('bills-summary').style.display = 'block';
-            }
-        });
-        
-        function printBill(billId) {
-            // Find the bill row
-            const billRow = Array.from(document.querySelectorAll('.bill-table tbody tr')).find(row => {
-                return row.cells[0].textContent == billId;
-            });
-            
-            if (!billRow) return;
-            
-            // Extract bill data
-            const id = billRow.cells[0].textContent;
-            const customer = billRow.cells[1].textContent;
-            const product = billRow.cells[2].textContent;
-            const quantity = billRow.cells[3].textContent;
-            const total = billRow.cells[4].textContent;
-            
-            // Create a printable bill
-            const printWindow = window.open('', '', 'height=500,width=800');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Bill #${id}</title>
-                    <style>
-                        body {
-                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                            padding: 20px;
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .bill-header {
-                            text-align: center;
-                            margin-bottom: 30px;
-                        }
-                        .bill-title {
-                            font-size: 24px;
-                            margin-bottom: 10px;
-                        }
-                        .bill-subtitle {
-                            color: #666;
-                            font-size: 16px;
-                        }
-                        .bill-info {
-                            margin: 20px 0;
-                            padding: 15px;
-                            border: 1px solid #ddd;
-                            border-radius: 5px;
-                        }
-                        .bill-row {
-                            display: flex;
-                            justify-content: space-between;
-                            padding: 10px 0;
-                            border-bottom: 1px solid #eee;
-                        }
-                        .bill-row:last-child {
-                            border-bottom: none;
-                        }
-                        .bill-label {
-                            font-weight: bold;
-                            color: #555;
-                        }
-                        .bill-value {
-                            color: #333;
-                        }
-                        .bill-total-row {
-                            font-size: 18px;
-                            font-weight: bold;
-                            margin-top: 20px;
-                            padding-top: 10px;
-                            border-top: 2px solid #ddd;
-                        }
-                        .bill-footer {
-                            margin-top: 40px;
-                            text-align: center;
-                            color: #666;
-                            font-style: italic;
-                        }
-                        .print-btn {
-                            padding: 10px 20px;
-                            background-color: #3a86ff;
-                            color: white;
-                            border: none;
-                            border-radius: 4px;
-                            cursor: pointer;
-                            display: block;
-                            margin: 30px auto;
-                            font-size: 16px;
-                        }
-                        @media print {
-                            .print-btn {
-                                display: none;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="bill-header">
-                        <h1 class="bill-title">Supermarket Billing System</h1>
-                        <p class="bill-subtitle">Bill Receipt #${id}</p>
-                        <p class="bill-subtitle">Date: ${new Date().toLocaleDateString()}</p>
-                    </div>
-                    
-                    <div class="bill-info">
-                        <div class="bill-row">
-                            <span class="bill-label">Customer:</span>
-                            <span class="bill-value">${customer}</span>
-                        </div>
-                        <div class="bill-row">
-                            <span class="bill-label">Product:</span>
-                            <span class="bill-value">${product}</span>
-                        </div>
-                        <div class="bill-row">
-                            <span class="bill-label">Quantity:</span>
-                            <span class="bill-value">${quantity}</span>
-                        </div>
-                        <div class="bill-row bill-total-row">
-                            <span class="bill-label">Total Amount:</span>
-                            <span class="bill-value">${total}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bill-footer">
-                        <p>Thank you for shopping with us!</p>
-                        <p>This is a computer-generated receipt and does not require a signature.</p>
-                    </div>
-                    
-                    <button class="print-btn" onclick="window.print(); return false;">Print Receipt</button>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-        }
-    </script>
+    <table class="order-table" th:if="${!orders.isEmpty()}">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${#dates.format(order.orderDate, 'dd-MMM-yyyy')}"></td>
+                <td th:text="'Rs.' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></td>
+                <td>
+                    <span th:text="${order.status}" th:class="${order.status == 'Paid'} ? 'order-status-paid' : 'order-status-unpaid'"></span>
+                </td>
+                <td>
+                    <form th:if="${order.status == 'Unpaid'}" th:action="@{/customer/order/pay}" method="post">
+                        <input type="hidden" name="orderId" th:value="${order.id}" />
+                        <input type="hidden" name="customer" th:value="${order.customer}" />
+                        <button type="submit" class="pay-btn">Pay Now</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

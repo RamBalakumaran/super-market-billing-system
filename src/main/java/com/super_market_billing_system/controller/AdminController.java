@@ -1,25 +1,23 @@
 package com.super_market_billing_system.controller;
 
-
-import com.super_market_billing_system.model.Bill;
 import com.super_market_billing_system.model.Product;
-import com.super_market_billing_system.service.BillService;
+import com.super_market_billing_system.repository.OrderRepository; // Changed dependency
 import com.super_market_billing_system.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
     @Autowired
     private ProductService productService;
 
+    // The Admin controller now uses the OrderRepository to generate reports
     @Autowired
-    private BillService billService;
+    private OrderRepository orderRepository;
 
     @GetMapping("/home")
     public String home(Model model) {
@@ -39,10 +37,10 @@ public class AdminController {
         return "redirect:/admin/home";
     }
 
+    // This method now fetches a list of all Orders
     @GetMapping("/report")
     public String viewReport(Model model) {
-        List<Bill> bills = billService.getAllBills();
-        model.addAttribute("bills", bills);
+        model.addAttribute("orders", orderRepository.findAll());
         return "report";
     }
 }

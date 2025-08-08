@@ -1,277 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard - Supermarket Billing System</title>
+    <title>Customer Dashboard</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            min-height: 100vh;
-        }
-        
-        .header {
-            background-color: #3a86ff;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .nav-links a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        
-        .dashboard-title {
-            margin: 20px 0;
-            color: #333;
-            font-size: 24px;
-        }
-        
-        .products-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .product-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .product-content {
-            padding: 20px;
-        }
-        
-        .product-title {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-        
-        .product-price {
-            color: #3a86ff;
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .product-stock {
-            color: #666;
-            margin-bottom: 15px;
-        }
-        
-        .buy-form {
-            margin-top: 15px;
-        }
-        
-        .form-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .form-row label {
-            margin-right: 10px;
-            min-width: 80px;
-        }
-        
-        .form-row input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .buy-btn {
-            background-color: #3a86ff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-        
-        .buy-btn:hover {
-            background-color: #2667cc;
-        }
-        
-        .no-stock {
-            color: #ff3a3a;
-            font-style: italic;
-        }
-        
-        .customer-name-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .customer-name-input {
-            display: flex;
-            align-items: center;
-        }
-        
-        .customer-name-input label {
-            margin-right: 10px;
-            font-weight: 500;
-        }
-        
-        .customer-name-input input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            flex: 1;
-            max-width: 300px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f5f5f5; min-height: 100vh; }
+        .header { background-color: #3a86ff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-size: 20px; font-weight: bold; }
+        .nav-links { display: flex; align-items: center;}
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 4px; transition: background-color 0.3s; }
+        .nav-links a:hover { background-color: rgba(255, 255, 255, 0.2); }
+        .cart-link { position: relative; }
+        .cart-count { position: absolute; top: -5px; right: 0; background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .dashboard-title { margin: 20px 0; color: #333; font-size: 24px; }
+        .products-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .product-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; }
+        .product-content { padding: 20px; }
+        .product-title { font-size: 18px; font-weight: 500; margin-bottom: 10px; }
+        .product-price { color: #3a86ff; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+        .product-stock { color: #666; margin-bottom: 15px; }
+        .no-stock { color: #ff3a3a; font-style: italic; }
+        .buy-form { margin-top: 15px; }
+        .form-row { display: flex; align-items: center; margin-bottom: 10px; }
+        .buy-btn { background-color: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; transition: background-color 0.3s; margin-top: 10px; }
+        .buy-btn:hover { background-color: #218838; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">Supermarket Shopping</div>
-        <div class="nav-links">
-            <a href="/customer/home">Products</a>
-            <a href="/customer/bill" id="view-bills-link">View My Bills</a>
-            <a href="/">Logout</a>
-        </div>
+<div class="header">
+    <div class="logo">Supermarket Shopping</div>
+    <div class="nav-links">
+        <a th:href="@{/customer/home}">Products</a>
+        <a th:href="@{/customer/cart}" class="cart-link">
+            View Cart
+            <span class="cart-count" th:if="${cartSize > 0}" th:text="${cartSize}">0</span>
+        </a>
+        <a id="history-link" href="#">Purchase History</a>
+        <a href="/">Logout</a>
     </div>
-    
-    <div class="container">
-        <div class="customer-name-container">
-            <div class="customer-name-input">
-                <label for="customer-name">Your Name:</label>
-                <input type="text" id="customer-name" placeholder="Enter your name">
-            </div>
-        </div>
-        
-        <h1 class="dashboard-title">Available Products</h1>
-        
-        <div class="products-container">
-            <div th:each="product : ${products}" class="product-card">
-                <div class="product-content">
-                    <h3 class="product-title" th:text="${product.name}">Product Name</h3>
-                    <div class="product-price" th:text="'$' + ${product.price}">$0.00</div>
-                    <div th:if="${product.quantity > 0}" class="product-stock" th:text="'In Stock: ' + ${product.quantity}">In Stock: 0</div>
-                    <div th:if="${product.quantity <= 0}" class="no-stock">Out of Stock</div>
-                    
-                    <form th:if="${product.quantity > 0}" class="buy-form" action="/customer/buy" method="post">
-                        <input type="hidden" name="productId" th:value="${product.id}">
-                        <input type="hidden" name="customer" id="customer-field">
-                        
-                        <div class="form-row">
-                            <label for="quantity">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" min="1" th:max="${product.quantity}" value="1">
-                        </div>
-                        
-                        <button type="submit" class="buy-btn">Buy Now</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const customerNameInput = document.getElementById('customer-name');
-            const viewBillsLink = document.getElementById('view-bills-link');
-            const buyForms = document.querySelectorAll('.buy-form');
-            
-            // Check if customer name is saved in localStorage
-            if (localStorage.getItem('customerName')) {
-                customerNameInput.value = localStorage.getItem('customerName');
+<div class="container">
+     <div class="customer-name-container" style="padding: 15px; margin-bottom: 20px; background: white; border-radius: 8px;">
+        <label for="customer-name" style="font-weight: 500;">Your Name:</label>
+        <input type="text" id="customer-name" placeholder="Enter your name to checkout" style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; margin-left: 10px;">
+    </div>
+    <h1 class="dashboard-title">Available Products</h1>
+    <div class="products-container">
+        <div th:each="product : ${products}" class="product-card">
+            <div class="product-content">
+                <h3 class="product-title" th:text="${product.name}">Product Name</h3>
+                <div class="product-price" th:text="'Rs.' + ${#numbers.formatDecimal(product.price, 1, 2)}">Rs.0.00</div>
+                <div th:if="${product.quantity > 0}" class="product-stock" th:text="'In Stock: ' + ${product.quantity}"></div>
+                <div th:if="${product.quantity <= 0}" class="no-stock">Out of Stock</div>
+                
+                <!-- THE CORRECTION IS IN THE LINE BELOW -->
+                <form th:if="${product.quantity > 0}" class="buy-form" th:action="@{/customer/cart/add}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <div class="form-row">
+                        <label>Quantity:</label>
+                        <input type="number" name="quantity" min="1" th:max="${product.quantity}" value="1" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <button type="submit" class="buy-btn">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const customerNameInput = document.getElementById('customer-name');
+        const historyLink = document.getElementById('history-link');
+
+        function updateLinks() {
+            const customerName = customerNameInput.value.trim();
+            if (customerName) {
+                historyLink.href = `/customer/history?customer=${encodeURIComponent(customerName)}`;
+                localStorage.setItem('customerName', customerName);
+            } else {
+                historyLink.href = '#';
             }
-            
-            // Update localStorage when customer name changes
-            customerNameInput.addEventListener('input', function() {
-                localStorage.setItem('customerName', this.value);
-                updateCustomerFields();
-                updateViewBillsLink();
-            });
-            
-            // Add customer name to all buy forms
-            function updateCustomerFields() {
-                const customerName = customerNameInput.value;
-                buyForms.forEach(form => {
-                    // Fix: Use a general selector that will work for all forms
-                    const customerField = form.querySelector('input[name="customer"]');
-                    if (customerField) {
-                        customerField.value = customerName;
-                    }
-                });
+        }
+        
+        if (localStorage.getItem('customerName')) {
+            customerNameInput.value = localStorage.getItem('customerName');
+        }
+
+        customerNameInput.addEventListener('input', updateLinks);
+
+        historyLink.addEventListener('click', function(e) {
+            if (customerNameInput.value.trim() === '') {
+                e.preventDefault();
+                alert('Please enter your name to view history.');
             }
-            
-            // Update the view bills link to include customer name
-            function updateViewBillsLink() {
-                const customerName = customerNameInput.value;
-                if (customerName) {
-                    viewBillsLink.href = `/customer/bill?customer=${encodeURIComponent(customerName)}`;
-                } else {
-                    viewBillsLink.href = '/customer/bill';
-                }
-            }
-            
-            // Initial update
-            updateCustomerFields();
-            updateViewBillsLink();
-            
-            // Form validation
-            buyForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const customerName = customerNameInput.value.trim();
-                    if (!customerName) {
-                        e.preventDefault();
-                        alert('Please enter your name before making a purchase');
-                    }
-                });
-            });
         });
-    </script>
+        
+        updateLinks();
+    });
+</script>
 </body>
 </html>
