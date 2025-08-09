@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Payment</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f9; margin: 0; }
+        .header { background-color: #3a86ff; color: white; padding: 15px 30px; }
+        .container { max-width: 800px; margin: 30px auto; padding: 20px; }
+        .card { background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 25px; }
+        h1, h2 { color: #333; }
+        .order-summary, .payment-details { margin-bottom: 25px; }
+        .summary-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .summary-item span { font-size: 16px; }
+        .grand-total { font-size: 1.2em; font-weight: bold; color: #3a86ff; }
+        .payment-options label { display: block; margin: 10px 0; font-size: 18px; cursor: pointer; }
+        .payment-options input { margin-right: 10px; }
+        .form-actions { margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px; }
+        .action-btn { padding: 12px 25px; border-radius: 5px; text-decoration: none; font-size: 16px; cursor: pointer; border: none; }
+        .confirm-btn { background-color: #28a745; color: white; }
+        .cancel-btn { background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+<div class="header"><h1>Confirm Your Payment</h1></div>
+
+<div class="container">
+    <div class="card">
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-item">
+                <span>Order ID:</span>
+                <span th:text="${order.id}"></span>
+            </div>
+            <div class="summary-item">
+                <span>Customer:</span>
+                <span th:text="${order.customer}"></span>
+            </div>
+            <div class="summary-item">
+                <span>Total Amount:</span>
+                <span class="grand-total" th:text="'Rs.' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}"></span>
+            </div>
+        </div>
+
+        <div class="payment-details">
+            <h2>Select Payment Method</h2>
+            <form th:action="@{/customer/order/confirm-payment}" method="post">
+                <!-- Hidden fields to pass necessary data -->
+                <input type="hidden" name="orderId" th:value="${order.id}" />
+                <input type="hidden" name="customer" th:value="${order.customer}" />
+
+                <div class="payment-options">
+                    <label><input type="radio" name="paymentType" value="UPI" required checked> UPI</label>
+                    <label><input type="radio" name="paymentType" value="Credit Card"> Credit Card</label>
+                    <label><input type="radio" name="paymentType" value="Debit Card"> Debit Card</label>
+                    <label><input type="radio" name="paymentType" value="Cash on Delivery"> Cash on Delivery</label>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/customer/bills/unpaid(customer=${order.customer})}" class="action-btn cancel-btn">Cancel</a>
+                    <button type="submit" class="action-btn confirm-btn">Confirm Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

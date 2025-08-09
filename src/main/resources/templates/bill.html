@@ -15,7 +15,11 @@
         .order-table th { background-color: #f8f9fa; }
         .order-status-paid { color: green; font-weight: bold; }
         .order-status-unpaid { color: red; font-weight: bold; }
-        .pay-btn { background-color: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .pay-btn {
+            background-color: #28a745; color: white; border: none; padding: 8px 15px;
+            border-radius: 5px; cursor: pointer; text-decoration: none;
+            display: inline-block;
+        }
         .no-bills { text-align: center; font-size: 1.2em; color: #666; padding: 50px; background: white; border-radius: 8px; }
     </style>
 </head>
@@ -53,11 +57,12 @@
                     <span th:text="${order.status}" th:class="${order.status == 'Paid'} ? 'order-status-paid' : 'order-status-unpaid'"></span>
                 </td>
                 <td>
-                    <form th:if="${order.status == 'Unpaid'}" th:action="@{/customer/order/pay}" method="post">
-                        <input type="hidden" name="orderId" th:value="${order.id}" />
-                        <input type="hidden" name="customer" th:value="${order.customer}" />
-                        <button type="submit" class="pay-btn">Pay Now</button>
-                    </form>
+                    <!-- Link to the payment page, only shown if the order is Unpaid -->
+                    <a th:if="${order.status == 'Unpaid'}"
+                       th:href="@{/customer/order/payment/{id}(id=${order.id})}"
+                       class="pay-btn">
+                       Pay Now
+                    </a>
                 </td>
             </tr>
         </tbody>

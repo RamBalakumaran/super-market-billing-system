@@ -18,10 +18,13 @@ public class Order {
     private double totalAmount;
     private String status; // "Paid" or "Unpaid"
 
+    // NEW FIELD: To store how the order was paid
+    private String paymentType;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Bill> billItems = new ArrayList<>();
 
-    // Getters and Setters
+    // Getters and Setters for all fields
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getCustomer() { return customer; }
@@ -32,6 +35,8 @@ public class Order {
     public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getPaymentType() { return paymentType; } // Getter for new field
+    public void setPaymentType(String paymentType) { this.paymentType = paymentType; } // Setter for new field
     public List<Bill> getBillItems() { return billItems; }
     public void setBillItems(List<Bill> billItems) { this.billItems = billItems; }
 }

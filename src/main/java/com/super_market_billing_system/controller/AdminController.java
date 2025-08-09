@@ -1,12 +1,14 @@
 package com.super_market_billing_system.controller;
 
 import com.super_market_billing_system.model.Product;
-import com.super_market_billing_system.repository.OrderRepository; // Changed dependency
+import com.super_market_billing_system.repository.OrderRepository;
 import com.super_market_billing_system.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -15,7 +17,6 @@ public class AdminController {
     @Autowired
     private ProductService productService;
 
-    // The Admin controller now uses the OrderRepository to generate reports
     @Autowired
     private OrderRepository orderRepository;
 
@@ -37,7 +38,25 @@ public class AdminController {
         return "redirect:/admin/home";
     }
 
-    // This method now fetches a list of all Orders
+    // NEW METHOD: Shows the form to update a product
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(@PathVariable("id") Long id, Model model) {
+        Optional<Product> product = productService.getProductById(id);
+        if (product.isPresent()) {
+            model.addAttribute("product", product.get());
+            return "update_product"; // The name of our new HTML template
+        } else {
+            return "redirect:/admin/home"; // Redirect if product not found
+        }
+    }
+
+    // NEW METHOD: Processes the update form submission
+    @PostMapping("/update")
+    public String updateProduct(@ModelAttribute("product") Product product) {
+        productService.updateProduct(product);
+        return "redirect:/admin/home";
+    }
+
     @GetMapping("/report")
     public String viewReport(Model model) {
         model.addAttribute("orders", orderRepository.findAll());

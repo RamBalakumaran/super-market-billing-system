@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.ui.Model;
 
+@SuppressWarnings("unused")
 @Controller
 public class AuthController {
     @Autowired
