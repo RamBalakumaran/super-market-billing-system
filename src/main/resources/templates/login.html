@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,6 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
         body {
             background-color: #f5f5f5;
             display: flex;
@@ -20,24 +19,22 @@
             height: 100vh;
             background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-        
-        .container {
+        .login-container {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             text-align: center;
         }
-        
-        .logo {
+        .login-logo {
             font-size: 24px;
             font-weight: bold;
             color: #3a86ff;
             margin-bottom: 30px;
         }
-        
-        input {
+        .login-form input {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -45,8 +42,7 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        
-        .button {
+        .login-button {
             background-color: #3a86ff;
             color: white;
             border: none;
@@ -58,55 +54,46 @@
             margin-top: 20px;
             transition: background-color 0.3s;
         }
-        
-        .button:hover {
+        .login-button:hover {
             background-color: #2667cc;
         }
-        
         .register-link {
             margin-top: 20px;
-            display: block;
-            text-align: center;
+            font-size: 14px;
         }
-        
         .register-link a {
             color: #3a86ff;
             text-decoration: none;
+            font-weight: 500;
         }
-        
         .register-link a:hover {
             text-decoration: underline;
         }
-        
         .error-message {
-            color: #ff3a3a;
-            margin-top: 20px;
+            color: #e74c3c;
+            margin-top: 15px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">Supermarket Billing System</div>
+    <div class="login-container">
+        <div class="login-logo">Supermarket Billing System</div>
         
-        <form action="/login" method="post">
+        <form class="login-form" th:action="@{/login}" method="post">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
-            <button type="submit" class="button">Login</button>
+            <button type="submit" class="login-button">Login</button>
         </form>
-        
-        <div class="register-link">
-            <p>New customer? <a href="/register">Register here</a></p>
+
+        <!-- Error message for failed login attempts -->
+        <div th:if="${param.error}" class="error-message">
+            Invalid username or password.
         </div>
         
-        <div class="error-message" id="error-message" style="display: none;">Invalid username or password</div>
+        <div class="register-link">
+            <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
+        </div>
     </div>
-    
-    <script>
-        // Check for login error
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('error')) {
-            document.getElementById('error-message').style.display = 'block';
-        }
-    </script>
 </body>
 </html>

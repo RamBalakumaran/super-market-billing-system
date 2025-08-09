@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,6 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
         body {
             background-color: #f5f5f5;
             display: flex;
@@ -20,7 +19,6 @@
             height: 100vh;
             background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-        
         .container {
             background-color: white;
             border-radius: 10px;
@@ -29,14 +27,12 @@
             width: 400px;
             text-align: center;
         }
-        
         .logo {
             font-size: 24px;
             font-weight: bold;
             color: #3a86ff;
             margin-bottom: 30px;
         }
-        
         input {
             width: 100%;
             padding: 12px;
@@ -45,7 +41,6 @@
             border-radius: 5px;
             font-size: 16px;
         }
-        
         .button {
             background-color: #3a86ff;
             color: white;
@@ -58,40 +53,31 @@
             margin-top: 20px;
             transition: background-color 0.3s;
         }
-        
         .button:hover {
             background-color: #2667cc;
         }
-        
         .login-link {
             margin-top: 20px;
             display: block;
             text-align: center;
         }
-        
         .login-link a {
             color: #3a86ff;
             text-decoration: none;
         }
-        
         .login-link a:hover {
             text-decoration: underline;
         }
-        
         .error-message {
             color: #ff3a3a;
-            margin-top: 20px;
-        }
-        
-        .success-message {
-            color: #4CAF50;
-            margin-top: 20px;
+            margin-top: 15px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">Supermarket Billing System</div>
+        <div class="logo">Create Your Account</div>
         
         <form action="/register" method="post">
             <input type="text" name="username" placeholder="Choose Username" required>
@@ -104,31 +90,13 @@
             <p>Already have an account? <a href="/">Login here</a></p>
         </div>
         
-        <div class="error-message" id="password-error" style="display: none;">Passwords do not match</div>
-        <div class="error-message" id="username-error" style="display: none;">Username already taken</div>
-        <div class="error-message" id="generic-error" style="display: none;">Registration failed</div>
-        <div class="success-message" id="success-message" style="display: none;">Registration successful! Redirecting to login...</div>
+        <!-- Error messages that are shown based on URL parameters -->
+        <div th:if="${param.passwordMismatch}" class="error-message">
+            Passwords do not match. Please try again.
+        </div>
+        <div th:if="${param.usernameTaken}" class="error-message">
+            That username is already taken. Please choose another.
+        </div>
     </div>
-    
-    <script>
-        // Check for registration errors
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('passwordMismatch')) {
-            document.getElementById('password-error').style.display = 'block';
-        }
-        if (urlParams.has('usernameTaken')) {
-            document.getElementById('username-error').style.display = 'block';
-        }
-        if (urlParams.has('error')) {
-            document.getElementById('generic-error').style.display = 'block';
-        }
-        if (urlParams.has('success')) {
-            document.getElementById('success-message').style.display = 'block';
-            // Redirect to login after 2 seconds
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 2000);
-        }
-    </script>
 </body>
 </html>

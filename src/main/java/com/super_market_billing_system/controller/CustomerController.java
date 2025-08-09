@@ -134,31 +134,28 @@ public class CustomerController {
         return "bill";
     }
 
-    // NEW METHOD: Shows the dedicated payment page for a specific order
     @GetMapping("/order/payment/{orderId}")
     public String showPaymentPage(@PathVariable Long orderId, Model model) {
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isPresent()) {
             model.addAttribute("order", orderOpt.get());
-            return "payment"; // Name of our new HTML template
+            return "payment";
         }
-        // Redirect if order not found, ensuring customer param is present
         String customer = orderOpt.map(Order::getCustomer).orElse("");
         return "redirect:/customer/bills/unpaid?customer=" + customer;
     }
 
-    // UPDATED METHOD: Processes the final payment confirmation from the payment page
     @PostMapping("/order/confirm-payment")
     public String confirmPayment(@RequestParam Long orderId,
                                  @RequestParam String customer,
-                                 @RequestParam String paymentType) { // Get the selected payment type
+                                 @RequestParam String paymentType) {
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isPresent()) {
             Order order = orderOpt.get();
             order.setStatus("Paid");
-            order.setPaymentType(paymentType); // Save the payment type
+            order.setPaymentType(paymentType);
             orderRepository.save(order);
         }
-        return "redirect:/customer/bills/unpaid?customer=" + customer;
+        return "redirect:/customer/history?customer=" + customer;
     }
 }

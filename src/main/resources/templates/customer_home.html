@@ -2,31 +2,31 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard</title>
+    <title>Supermarket Shopping</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f5f5f5; min-height: 100vh; }
-        .header { background-color: #3a86ff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .logo { font-size: 20px; font-weight: bold; }
-        .nav-links { display: flex; align-items: center;}
-        .nav-links a { color: white; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 4px; transition: background-color 0.3s; }
-        .nav-links a:hover { background-color: rgba(255, 255, 255, 0.2); }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f9; margin: 0; color: #333; }
+        .header { background-color: #3a86ff; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header .logo { font-size: 24px; font-weight: bold; }
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-size: 16px; padding: 8px 12px; border-radius: 4px; transition: background-color 0.3s; }
+        .nav-links a:hover { background-color: rgba(255,255,255,0.2); }
         .cart-link { position: relative; }
-        .cart-count { position: absolute; top: -5px; right: 0; background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-        .dashboard-title { margin: 20px 0; color: #333; font-size: 24px; }
-        .products-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .product-card { background-color: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; }
-        .product-content { padding: 20px; }
-        .product-title { font-size: 18px; font-weight: 500; margin-bottom: 10px; }
-        .product-price { color: #3a86ff; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
-        .product-stock { color: #666; margin-bottom: 15px; }
-        .no-stock { color: #ff3a3a; font-style: italic; }
-        .buy-form { margin-top: 15px; }
-        .form-row { display: flex; align-items: center; margin-bottom: 10px; }
-        .buy-btn { background-color: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; transition: background-color 0.3s; margin-top: 10px; }
-        .buy-btn:hover { background-color: #218838; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background-color: #e74c3c; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; font-weight: bold; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
+        .customer-name-container { padding: 20px; margin-bottom: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .customer-name-container label { font-weight: 500; margin-right: 10px; }
+        .customer-name-container input { border: 1px solid #ddd; padding: 8px; border-radius: 4px; font-size: 16px; }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .products-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .product-card { background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card h3 { margin-top: 0; font-size: 20px; }
+        .product-card .price { color: #3a86ff; font-weight: bold; font-size: 18px; margin: 10px 0; }
+        .product-card .stock { color: #666; }
+        .no-stock { color: #e74c3c; font-weight: bold; margin-top: 15px; }
+        .add-to-cart-form { margin-top: 20px; }
+        .form-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+        .add-to-cart-btn { background-color: #2ecc71; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; transition: background-color 0.3s; }
+        .add-to-cart-btn:hover { background-color: #27ae60; }
     </style>
 </head>
 <body>
@@ -39,37 +39,43 @@
             <span class="cart-count" th:if="${cartSize > 0}" th:text="${cartSize}">0</span>
         </a>
         <a id="history-link" href="#">Purchase History</a>
-        <a href="/">Logout</a>
+        <a th:href="@{/}">Logout</a>
     </div>
 </div>
 
 <div class="container">
-     <div class="customer-name-container" style="padding: 15px; margin-bottom: 20px; background: white; border-radius: 8px;">
-        <label for="customer-name" style="font-weight: 500;">Your Name:</label>
-        <input type="text" id="customer-name" placeholder="Enter your name to checkout" style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; margin-left: 10px;">
+    <div class="customer-name-container">
+        <label for="customer-name">Your Name:</label>
+        <input type="text" id="customer-name" placeholder="Enter name to shop & view history">
     </div>
-    <h1 class="dashboard-title">Available Products</h1>
+
+    <h1>Available Products</h1>
     <div class="products-container">
         <div th:each="product : ${products}" class="product-card">
-            <div class="product-content">
-                <h3 class="product-title" th:text="${product.name}">Product Name</h3>
-                <div class="product-price" th:text="'Rs.' + ${#numbers.formatDecimal(product.price, 1, 2)}">Rs.0.00</div>
-                <div th:if="${product.quantity > 0}" class="product-stock" th:text="'In Stock: ' + ${product.quantity}"></div>
-                <div th:if="${product.quantity <= 0}" class="no-stock">Out of Stock</div>
-                
-                <!-- THE CORRECTION IS IN THE LINE BELOW -->
-                <form th:if="${product.quantity > 0}" class="buy-form" th:action="@{/customer/cart/add}" method="post">
+            <div>
+                <h3 th:text="${product.name}">Product Name</h3>
+                <div class="price" th:text="'Rs.' + ${#numbers.formatDecimal(product.price, 1, 2)}"></div>
+                <div th:if="${product.quantity > 0}" class="stock" th:text="'In Stock: ' + ${product.quantity}"></div>
+            </div>
+            
+            <div th:if="${product.quantity > 0}" class="add-to-cart-form">
+                <form th:action="@{/customer/cart/add}" method="post">
                     <input type="hidden" name="productId" th:value="${product.id}">
                     <div class="form-row">
                         <label>Quantity:</label>
                         <input type="number" name="quantity" min="1" th:max="${product.quantity}" value="1" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
-                    <button type="submit" class="buy-btn">Add to Cart</button>
+                    <button type="submit" class="add-to-cart-btn">Add to Cart</button>
                 </form>
+            </div>
+            
+            <div th:if="${product.quantity <= 0}" class="no-stock">
+                Out of Stock
             </div>
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const customerNameInput = document.getElementById('customer-name');
@@ -94,7 +100,7 @@
         historyLink.addEventListener('click', function(e) {
             if (customerNameInput.value.trim() === '') {
                 e.preventDefault();
-                alert('Please enter your name to view history.');
+                alert('Please enter your name to view your purchase history.');
             }
         });
         
